@@ -30,7 +30,7 @@ def latlongs(data):
 		# Implementation for Grouping by time on the given json
 	# pd.read_json(json.loads(dict(alljson)))
 	# print alljson[["time"]].groupby(pd.TimerGroup(freq='20min'))
-	print len(alllats)
+	print len(alllats), alllats[:2]
 	return alllats
 
 
@@ -51,6 +51,17 @@ def show():
 @app.route('/return')
 def get():
 	df = readingCsv()
+	dfs = pd.DataFrame(df)
+	print dfs[:2]
+	dfs.columns = ["lat", "long", "time"]
+	dfs["time"] = pd.to_datetime(dfs["time"], unit='s')
+	print dfs.dtypes
+	# Printing the lat and long frequency of the time grouped that is required
+	print  dfs.groupby(pd.TimeGrouper(key='time', freq='240Min')).aggregate(np.sum)[:]
+	# print dfs
+
+
+
 	return jsonify({"data": df})
 
 app.run()
